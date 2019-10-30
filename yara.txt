@@ -1,0 +1,85 @@
+rule njrat_0_11G
+{
+	strings:
+		$ver = "0.11G" wide
+		$magic = "CompilationRelaxationsAttribute\x00\x00\x01\x00"
+		$str1 = "Executed As" wide
+		$str2 = "Execute ERROR" wide
+		$str3 = "Updating To" wide
+		$str4 = "Update ERROR" wide
+		$str5 = "netsh firewall add allowedprogram" wide
+	condition:
+		all of them
+}
+
+rule remy
+{
+	strings:
+    	$instruction_make_key = {C6 45 ?? 23 C6 45 ?? B6 C6 45 ?? B4 C6 45 ?? 67 C6 45 ?? A3 C6 45 ?? 03 C6 45 ?? 26 C6 45 ?? 02 C6 45 ?? B6 C6 45 ?? 87}
+		$json_key = "{ \"$minKey\" :"
+		
+	condition:
+		all of them    
+}
+
+rule waterbear
+{
+	strings:
+		$calc_apihash = {535556578B6C24188B453CFF740578FF74057C8B54057803D58B4A188B5A2003DDE370498B348B03F533FFFC33C0AC3AC47407C1CF0D03F8EBF23B7C241C75E18B5A2403DD668B0C4B8B5A1C03DD8B048B8BD803C53B5C24047C3C2B5C24043B1C247F33807C2424007428807C242800742183EC108BF08BFCACAA3C2E75FAC647FF0054FF5424385650FF54244083C410EB0433C0EB0083C4085F5E5D5BC3}
+		$calc_apihash_x64 = { 4154415541565657534883EC4048894C240848895424104C894424184C894C24204889D3448B4B3C4901D94981C188000000458B294D85ED75084831C0E9940000004E8D042B458B71044D01EE418B4818458B50204901DAFFC94D8D0C8A418B314801DE31FF31C0AC38C47407C1CF0D01C7EBF23B7C240875027407E2DC4831C0EB53458B48244901D966418B0C49458B481C4901D9418B04894C39E87C344C39F0732F488D3418488D7C24304989FCA4803E2E75FAA4C707444C4C004C89E1FF5424184885C0740D4889C14889F2FF5424204801D84883C4405B5F5E415E415D415CC3 }
+
+	condition:
+		any of them
+}
+
+rule plugx_0x724 {
+	
+	strings:
+		/*
+		seg000:0000A100 55                                            push    ebp
+		seg000:0000A101 8B EC                                         mov     ebp, esp
+		seg000:0000A103 83 EC 10                                      sub     esp, 10h
+		seg000:0000A106 68 24 07 00 00                                push    724h
+		seg000:0000A10B 68 00 E0 13 00                                push    13E000h
+		seg000:0000A110 68 C0 8B 14 00                                push    148BC0h
+		*/
+
+		$hex = {55 8B EC 83 EC 10 68 24 07 00 00 68 ?? ?? ?? 00 68 ?? ?? ?? 00}
+		$s5 = "/q /c \"RECYCLE.BIN\\explorer.exe \"\"\"%s\"\"\" 0 1\"" wide
+
+	condition:
+		all of them
+
+}
+
+rule keyboy {
+	strings:
+		$Codec_Encoder = { BD 00 00 00 A9 00 00 00 B5 00 00 00 EB 00 00 00 F7 00 00 00 E3 00 00 00 E7 00 00 00 ED 00 00 00 }
+		$Codec_Decoder = { 95 00 00 00 99 00 00 00 9D 00 00 00 C3 00 00 00 C7 00 00 00 CB 00 00 00 D7 00 00 00 E5 00 00 00 }
+		
+		$Ascii_MDDEFGEGETGIZ = "MDDEFGEGETGIZ" wide ascii
+		$Ascii_IJUDHSDJFKJDE = "IJUDHSDJFKJDE" wide ascii
+		$Ascii_WZ2DLL01X     = "WZ2DLL01X"     wide ascii
+		$Ascii_loveyouzy     = "loveyouzy"     wide ascii
+		$Ascii_lindazy       = "lindazy"       wide ascii
+		$Ascii_QL_ASD        = "QL_ASD"        wide ascii
+		$Ascii_KING_TAG      = "KING_TAG"      wide ascii
+	condition:
+		all of ($Codec_*) and any of ($Ascii_*)
+}
+
+rule phantomivy
+{
+    strings:
+        $token_1 = "SOFTWARE\\Classes\\http\\shell\\open\\commandV"
+        $token_2 = "StubPath" 
+        $token_3 = ".default\\" 
+        $token_4 = "/%08x%08x HTTP/1.1" 
+        $token_5 = "Cookie: id=%s" 
+        $token_6 = "Software\\Microsoft\\Active Setup\\Installed Components\\" 
+		$hex_0 = {0660606D7D6C506F4D5960607E534953705D5412734853}
+		$hex_1 = {750660604D7D6C506F4D596060794B597473511A7C6060755F76751253487300}
+		$hex_2 = {7F0660604B557278534B6F60606F456F4859710F0E60607F5D707F1259447900}
+    condition:
+         5 of ($token_*) or 2 of ($hex_*)
+}
